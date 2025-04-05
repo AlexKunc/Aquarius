@@ -1,95 +1,71 @@
 pipeline {
     agent any
 
-    environment {
-        // Таймауты (в секундах)
-        QEMU_START_TIMEOUT = '120'
-        TEST_TIMEOUT = '300'
-        
-        // Пути к тестам
-        AUTOTESTS_PATH = 'lab4/openbmc_auth_tests.py'
-        WEBUI_TESTS_PATH = 'lab5/test_redfish.py'
-    }
-
     stages {
-        // Этап 1: Подготовка среды (без sudo)
-        stage('Setup') {
+        stage('Checkout') {
             steps {
-                script {
-                    // Проверяем, что QEMU и Python уже установлены в образе
-                    sh '''
-                    pip install --user pytest selenium requests
-                    '''
-                }
+                git branch: 'main', 
+                    url: 'https://github.com/yourusername/your-repo.git'
             }
         }
-
-        // Этап 2: Запуск QEMU
+        
         stage('Start QEMU') {
             steps {
                 script {
-                    sh '''
-                    chmod +x qemu_start.sh
-                    ./qemu_start.sh > qemu.log 2>&1 &
-                    '''
-                    
-                    sh """
-                    timeout ${env.QEMU_START_TIMEOUT} bash -c 'while ! nc -z localhost 2443; do sleep 5; echo "Waiting for QEMU..."; done'
-                    """
+                    sh 'chmod +x qemu_start.sh'
+                    sh './qemu_start.sh &'
+                    // Ожидание старта QEMU
+                    sleep(time: 120, unit: 'SECONDS')
                 }
             }
             post {
                 always {
-                    archiveArtifacts artifacts: 'qemu.log', allowEmptyArchive: true
+                    archiveArtifacts artifacts: 'romulus/*.mtd', allowEmptyArchive: true
                 }
             }
         }
 
-        // Этап 3: Запуск автотестов
-        stage('Run Autotests') {
+        stage('Run Auth Tests') {
             steps {
-                script {
-                    sh """
-                    timeout ${env.TEST_TIMEOUT} pytest -v ${env.AUTOTESTS_PATH} --junitxml=autotest-results.xml
-                    """
+                dir('lab4') {
+                    sh 'pytest -v --junitxml=auth-results.xml openbmc_auth_tests.py'
                 }
             }
             post {
                 always {
-                    junit 'autotest-results.xml'
+                    junit 'lab4/auth-results.xml'
                 }
             }
         }
 
-        // Этап 4: Запуск WebUI тестов (без chromedriver)
         stage('Run WebUI Tests') {
             steps {
-                script {
-                    // Используем webdriver-manager для автоматического управления драйвером
-                    sh """
-                    python3 -m pip install webdriver-manager
-                    timeout ${env.TEST_TIMEOUT} pytest -v ${env.WEBUI_TESTS_PATH} \
-                        --html=webui-report.html \
-                        --self-contained-html
-                    """
+                dir('lab5') {
+                    sh 'pytest -v --junitxml=webui-results.xml test_redfish.py'
                 }
             }
             post {
                 always {
-                    publishHTML target: [
-                        reportDir: '.',
-                        reportFiles: 'webui-report.html',
-                        reportName: 'WebUI Test Report'
-                    ]
+                    junit 'lab5/webui-results.xml'
                 }
             }
         }
-    }
 
-    post {
-        always {
-            sh 'pkill -f qemu-system-arm || true'
-            sh 'rm -f qemu.log || true'
+        stage('Load Testing') {
+            steps {
+                script {
+                    // Пример с использованием Apache Bench
+                    sh 'apt-get update && apt-get install -y apache2-utils'
+                    sh '''
+                        ab -n 1000 -c 10 https://localhost:2443/redfish/v1/ > load-test-results.txt
+                    '''
+                }
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'load-test-results.txt', allowEmptyArchive: true
+                }
+            }
         }
     }
 }
