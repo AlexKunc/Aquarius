@@ -18,11 +18,6 @@ pipeline {
                 script {
                     // Проверяем, что QEMU и Python уже установлены в образе
                     sh '''
-                    if ! command -v qemu-system-arm &> /dev/null; then
-                        echo "QEMU not found! Please rebuild your Jenkins image with QEMU preinstalled"
-                        exit 1
-                    fi
-                    
                     pip install --user pytest selenium requests
                     '''
                 }
