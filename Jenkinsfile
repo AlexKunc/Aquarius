@@ -50,22 +50,5 @@ pipeline {
                 }
             }
         }
-
-        stage('Load Testing') {
-            steps {
-                script {
-                    // Пример с использованием Apache Bench
-                    sh 'apt-get update && apt-get install -y apache2-utils'
-                    sh '''
-                        ab -n 1000 -c 10 https://localhost:2443/redfish/v1/ > load-test-results.txt
-                    '''
-                }
-            }
-            post {
-                always {
-                    archiveArtifacts artifacts: 'load-test-results.txt', allowEmptyArchive: true
-                }
-            }
-        }
     }
 }
