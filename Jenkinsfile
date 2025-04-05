@@ -15,7 +15,7 @@ pipeline {
                     sh 'chmod +x qemu_start.sh'
                     sh './qemu_start.sh &'
                     // Ожидание старта QEMU
-                    sleep(time: 120, unit: 'SECONDS')
+                    sleep(time: 30, unit: 'SECONDS')
                 }
             }
             post {
