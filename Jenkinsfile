@@ -5,7 +5,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main', 
-                    url: 'https://github.com/yourusername/your-repo.git'
+                    url: 'https://github.com/AlexKunc/Aquarius.git'
             }
         }
         
