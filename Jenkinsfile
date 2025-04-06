@@ -28,6 +28,24 @@ pipeline {
                 }
             }
         }
+
+
+        stage('Check OpenBMC Availability') {
+            steps {
+                script {
+                    sh '''
+                    echo "Проверяем доступность OpenBMC..."
+                    if curl -k https://localhost:2443; then
+                        echo "OpenBMC доступен!"
+                    else
+                        echo "Ошибка: OpenBMC не отвечает на localhost:2443"
+                        exit 1
+                    fi
+                    '''
+                }
+            }
+        }
+        
         stage('Run Auth Tests') {
             steps {
                 dir('lab4') {
