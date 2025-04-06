@@ -13,9 +13,13 @@ pipeline {
             steps {
                 script {
                     sh 'chmod +x qemu_start.sh'
+                    sh 'Xvfb :99 -screen 0 1024x768x24 &'  # Запуск виртуального дисплея
                     sh './qemu_start.sh &'
-                    // Ожидание старта QEMU
-                    sleep(time: 30, unit: 'SECONDS')
+                    // Ждем доступности BMC
+                    sh '''for i in {1..30}; do
+                            curl -k https://localhost:2443 && break
+                            sleep 10
+                          done'''
                 }
             }
             post {
@@ -28,12 +32,13 @@ pipeline {
         stage('Run Auth Tests') {
             steps {
                 dir('lab4') {
-                    sh 'pytest -v --junitxml=auth-results.xml openbmc_auth_tests.py'
+                    sh '/opt/venv/bin/pytest -v --junitxml=auth-results.xml openbmc_auth_tests.py'
                 }
             }
             post {
                 always {
                     junit 'lab4/auth-results.xml'
+                    archiveArtifacts artifacts: 'lab4/auth-results.xml'
                 }
             }
         }
@@ -41,12 +46,13 @@ pipeline {
         stage('Run WebUI Tests') {
             steps {
                 dir('lab5') {
-                    sh 'pytest -v --junitxml=webui-results.xml test_redfish.py'
+                    sh '/opt/venv/bin/pytest -v --junitxml=webui-results.xml test_redfish.py'
                 }
             }
             post {
                 always {
                     junit 'lab5/webui-results.xml'
+                    archiveArtifacts artifacts: 'lab5/webui-results.xml'
                 }
             }
         }
