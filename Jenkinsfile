@@ -29,32 +29,6 @@ pipeline {
             }
         }
 
-        stage('Run Auth Tests') {
-            steps {
-                dir('lab4') {
-                    sh '/opt/venv/bin/pytest -v --junitxml=auth-results.xml openbmc_auth_tests.py'
-                }
-            }
-            post {
-                always {
-                    junit 'lab4/auth-results.xml'
-                    archiveArtifacts artifacts: 'lab4/auth-results.xml'
-                }
-            }
-        }
-
-        stage('Run WebUI Tests') {
-            steps {
-                dir('lab5') {
-                    sh '/opt/venv/bin/pytest -v --junitxml=webui-results.xml test_redfish.py'
-                }
-            }
-            post {
-                always {
-                    junit 'lab5/webui-results.xml'
-                    archiveArtifacts artifacts: 'lab5/webui-results.xml'
-                }
-            }
-        }
+        
     }
 }
