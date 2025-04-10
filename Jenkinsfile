@@ -71,57 +71,7 @@ pipeline {
             }
         }
         
-        stage('Run Load Tests - Low Load') {
-            steps {
-                dir('lab6') {
-                    script {
-                        sh '''
-                        /opt/venv/bin/locust -f locustfile.py \
-                            --headless \
-                            --users 100 \
-                            --spawn-rate 10 \
-                            --run-time 30s \
-                            --host=https://localhost:2443 \
-                            --html load_test_report_low.html \
-                            --csv load_test_low \
-                            --only-summary
-                        '''
-                    }
-                }
-            }
-            post {
-                always {
-                    archiveArtifacts artifacts: 'lab6/load_test_report_low.html, lab6/load_test_low_*.csv'
-                }
-            }
-        }
-
-        stage('Run Load Tests - Medium Load') {
-            steps {
-                dir('lab6') {
-                    script {
-                        sh '''
-                        /opt/venv/bin/locust -f locustfile.py \
-                            --headless \
-                            --users 100 \
-                            --spawn-rate 10 \
-                            --run-time 30s \
-                            --host=https://localhost:2443 \
-                            --html load_test_report_medium.html \
-                            --csv load_test_medium \
-                            --only-summary
-                        '''
-                    }
-                }
-            }
-            post {
-                always {
-                    archiveArtifacts artifacts: 'lab6/load_test_report_medium.html, lab6/load_test_medium_*.csv'
-                }
-            }
-        }
-
-        stage('Run Load Tests - High Load') {
+        stage('Run Load Tests') {
             steps {
                 dir('lab6') {
                     script {
@@ -130,10 +80,10 @@ pipeline {
                             --headless \
                             --users 800 \
                             --spawn-rate 30 \
-                            --run-time 20s \
+                            --run-time 30s \
                             --host=https://localhost:2443 \
-                            --html load_test_report_high.html \
-                            --csv load_test_high \
+                            --html load_test_report.html \
+                            --csv load_test \
                             --only-summary
                         '''
                     }
@@ -141,7 +91,7 @@ pipeline {
             }
             post {
                 always {
-                    archiveArtifacts artifacts: 'lab6/load_test_report_high.html, lab6/load_test_high_*.csv'
+                    archiveArtifacts artifacts: 'lab6/load_test_report.html, lab6/load_test_*.csv'
                 }
             }
         }
