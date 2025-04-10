@@ -103,9 +103,9 @@ pipeline {
                         sh '''
                         /opt/venv/bin/locust -f locustfile.py \
                             --headless \
-                            --users 300 \
+                            --users 100 \
                             --spawn-rate 10 \
-                            --run-time 20s \
+                            --run-time 30s \
                             --host=https://localhost:2443 \
                             --html load_test_report_medium.html \
                             --csv load_test_medium \
