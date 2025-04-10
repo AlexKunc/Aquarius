@@ -15,8 +15,37 @@ pipeline {
                     sh 'chmod +x qemu_start.sh'
                     sh 'Xvfb :99 -screen 0 1024x768x24 &'  
                     sh './qemu_start.sh &'
-                  
-                    sh 'sleep 2.5m'
+                    
+                    // Автоматическая проверка доступности вместо sleep
+                    def maxAttempts = 30
+                    def waitTime = 10
+                    def attempts = 0
+                    def bmcAvailable = false
+                    
+                    echo "Ожидание доступности OpenBMC..."
+                    
+                    while (attempts < maxAttempts && !bmcAvailable) {
+                        attempts++
+                        try {
+                            def status = sh(
+                                script: 'curl -k -s -o /dev/null -w "%{http_code}" https://localhost:2443/redfish/v1',
+                                returnStdout: true
+                            ).trim()
+                            
+                            if (status == "200") {
+                                bmcAvailable = true
+                                echo "OpenBMC доступен после ${attempts * waitTime} секунд"
+                            } else {
+                                sleep(waitTime)
+                            }
+                        } catch (Exception e) {
+                            sleep(waitTime)
+                        }
+                    }
+                    
+                    if (!bmcAvailable) {
+                        error("OpenBMC не стал доступен после ${maxAttempts * waitTime} секунд ожидания")
+                    }
                 }
             }
             post {
