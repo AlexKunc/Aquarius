@@ -71,7 +71,32 @@ pipeline {
             }
         }
         
-        stage('Run Load Tests') {
+        stage('Run Load Tests - Low Load') {
+            steps {
+                dir('lab6') {
+                    script {
+                        sh '''
+                        /opt/venv/bin/locust -f locustfile.py \
+                            --headless \
+                            --users 100 \
+                            --spawn-rate 20 \
+                            --run-time 30s \
+                            --host=https://localhost:2443 \
+                            --html load_test_report_low.html \
+                            --csv load_test_low \
+                            --only-summary
+                        '''
+                    }
+                }
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'lab6/load_test_report_low.html, lab6/load_test_low_*.csv'
+                }
+            }
+        }
+
+        stage('Run Load Tests - Medium Load') {
             steps {
                 dir('lab6') {
                     script {
@@ -80,19 +105,43 @@ pipeline {
                             --headless \
                             --users 300 \
                             --spawn-rate 50 \
-                            --run-time 10s \
+                            --run-time 20s \
                             --host=https://localhost:2443 \
-                            --html load_test_report.html \
-                            --csv load_test
+                            --html load_test_report_medium.html \
+                            --csv load_test_medium \
+                            --only-summary
                         '''
                     }
                 }
             }
             post {
                 always {
-                  
-                    archiveArtifacts artifacts: 'lab6/load_test_report.html, lab6/load_test_*.csv'
-                    
+                    archiveArtifacts artifacts: 'lab6/load_test_report_medium.html, lab6/load_test_medium_*.csv'
+                }
+            }
+        }
+
+        stage('Run Load Tests - High Load') {
+            steps {
+                dir('lab6') {
+                    script {
+                        sh '''
+                        /opt/venv/bin/locust -f locustfile.py \
+                            --headless \
+                            --users 800 \
+                            --spawn-rate 80 \
+                            --run-time 20s \
+                            --host=https://localhost:2443 \
+                            --html load_test_report_high.html \
+                            --csv load_test_high \
+                            --only-summary
+                        '''
+                    }
+                }
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'lab6/load_test_report_high.html, lab6/load_test_high_*.csv'
                 }
             }
         }
