@@ -16,7 +16,7 @@ pipeline {
                     sh 'Xvfb :99 -screen 0 1024x768x24 &'  
                     sh './qemu_start.sh &'
                     // Ждем доступности BMC
-                    sh 'sleep 2m'
+                    sh 'sleep 2.5m'
                 }
             }
             post {
