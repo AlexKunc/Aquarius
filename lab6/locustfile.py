@@ -14,11 +14,11 @@ class OpenBMC(HttpUser):
 
 class PublicAPI(HttpUser):
     wait_time = between(1,2)
-    host = "https://jsonplaceholder.typicode.com"
+    
 
     @task
     def jsonplaceholder(self):
-        self.client.get("/posts", verify=False)
+        self.client.get("https://jsonplaceholder.typicode.com/posts", verify=False)
 
     @task
     def weather(self):
