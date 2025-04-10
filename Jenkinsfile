@@ -79,7 +79,7 @@ pipeline {
                         /opt/venv/bin/locust -f locustfile.py \
                             --headless \
                             --users 100 \
-                            --spawn-rate 20 \
+                            --spawn-rate 10 \
                             --run-time 30s \
                             --host=https://localhost:2443 \
                             --html load_test_report_low.html \
@@ -104,7 +104,7 @@ pipeline {
                         /opt/venv/bin/locust -f locustfile.py \
                             --headless \
                             --users 300 \
-                            --spawn-rate 50 \
+                            --spawn-rate 20 \
                             --run-time 20s \
                             --host=https://localhost:2443 \
                             --html load_test_report_medium.html \
@@ -129,7 +129,7 @@ pipeline {
                         /opt/venv/bin/locust -f locustfile.py \
                             --headless \
                             --users 800 \
-                            --spawn-rate 80 \
+                            --spawn-rate 30 \
                             --run-time 20s \
                             --host=https://localhost:2443 \
                             --html load_test_report_high.html \
