@@ -90,7 +90,7 @@ pipeline {
             }
             post {
                 always {
-                    // Сохраняем отчеты
+                  
                     archiveArtifacts artifacts: 'lab6/load_test_report.html, lab6/load_test_*.csv'
                     
                 }
