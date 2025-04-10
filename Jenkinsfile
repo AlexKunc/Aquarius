@@ -43,7 +43,7 @@ pipeline {
             }
         }
         
-        stage('Run Auth Tests') {
+        stage('Run Auto Tests') {
             steps {
                 dir('lab4') {
                     sh '/opt/venv/bin/pytest -v --junitxml=auth-results.xml openbmc_auth_tests.py'
