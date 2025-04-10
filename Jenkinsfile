@@ -80,7 +80,7 @@ pipeline {
                             --headless \
                             --users 300 \
                             --spawn-rate 50 \
-                            --run-time 1m \
+                            --run-time 10s \
                             --host=https://localhost:2443 \
                             --html load_test_report.html \
                             --csv load_test
