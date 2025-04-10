@@ -17,8 +17,8 @@ pipeline {
                     sh './qemu_start.sh &'
                     
                     // Автоматическая проверка доступности вместо sleep
-                    def maxAttempts = 30
-                    def waitTime = 10
+                    def maxAttempts = 33
+                    def waitTime = 3
                     def attempts = 0
                     def bmcAvailable = false
                     
