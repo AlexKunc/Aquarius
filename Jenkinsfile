@@ -79,8 +79,8 @@ pipeline {
                         /opt/venv/bin/locust -f locustfile.py \
                             --headless \
                             --users 300 \
-                            --spawn-rate 20 \
-                            --run-time 30s \
+                            --spawn-rate 10 \
+                            --run-time 10s \
                             --host=https://localhost:2443 \
                             --html load_test_report.html \
                             --csv load_test \
