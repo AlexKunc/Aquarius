@@ -18,7 +18,7 @@ class PublicAPI(HttpUser):
 
     @task
     def jsonplaceholder(self):
-        self.client.get("/posts")
+        self.client.get("/posts", verify=False)
 
     @task
     def weather(self):
