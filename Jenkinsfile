@@ -33,16 +33,15 @@ pipeline {
         stage('Check OpenBMC Availability') {
             steps {
                 script {
-                    sh '''
-                    chmod +x qemu_start.sh
-                    Xvfb :99 -screen 0 1024x768x24 &
-                    ./qemu_start.sh &
+                    sh 'chmod +x qemu_start.sh'
+                    sh 'Xvfb :99 -screen 0 1024x768x24 &'  
+                    sh './qemu_start.sh &'
                     // Ждем доступности BMC
-                    for i in {1..30}; do
+                    sh '''for i in {1..30}; do
                             curl -k https://localhost:2443 && break
                             sleep 10
-                          done
-                          
+                          done'''
+                    sh '''
                     echo "Проверяем доступность OpenBMC..."
                     if curl -k https://localhost:2443; then
                         echo "OpenBMC доступен!"
