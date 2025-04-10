@@ -77,7 +77,6 @@ pipeline {
                     script {
                         sh '''
                         /opt/venv/bin/locust -f locustfile.py \
-                            --ignore-cert-errors
                             --headless \
                             --users 300 \
                             --spawn-rate 50 \
