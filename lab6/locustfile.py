@@ -1,6 +1,4 @@
 from locust import HttpUser, between, task
-import urllib3
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class OpenBMC(HttpUser):
     wait_time = between(1,5)
