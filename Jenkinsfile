@@ -15,38 +15,30 @@ pipeline {
                     sh 'chmod +x qemu_start.sh'
                     sh 'Xvfb :99 -screen 0 1024x768x24 &'  
                     sh './qemu_start.sh &'
-                    
-                    def bmcReady = false
-                    def timeout = 300 
-                    def interval = 5 
-                    def elapsed = 0
-                    
-                    while (!bmcReady && elapsed < timeout) {
-                        try {
-                            def response = sh(script: 'curl -s -o /dev/null -w "%{http_code}" http://localhost:2443 || true', returnStdout: true).trim()
-                            if (response == "200") {
-                                bmcReady = true
-                                echo "OpenBMC доступен!"
-                            } else {
-                                echo "OpenBMC еще не готов (HTTP код: ${response}). Ждем..."
-                                sleep(interval)
-                                elapsed += interval
-                            }
-                        } catch (Exception e) {
-                            echo "Ошибка проверки: ${e}. Ждем..."
-                            sleep(interval)
-                            elapsed += interval
-                        }
-                    }
-                    
-                    if (!bmcReady) {
-                        error("Таймаут ожидания OpenBMC (${timeout} секунд)")
-                    }
+                    // Ждем доступности BMC
+                    sh 'sleep 2.5m'
                 }
             }
             post {
                 always {
                     archiveArtifacts artifacts: 'romulus/*.mtd', allowEmptyArchive: true
+                }
+            }
+        }
+
+
+        stage('Check OpenBMC Availability') {
+            steps {
+                script {
+                    sh '''
+                    echo "Проверяем доступность OpenBMC..."
+                    if curl -k https://localhost:2443; then
+                        echo "OpenBMC доступен!"
+                    else
+                        echo "Ошибка: OpenBMC не отвечает на localhost:2443"
+                        exit 1
+                    fi
+                    '''
                 }
             }
         }
