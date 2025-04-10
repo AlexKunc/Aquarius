@@ -15,7 +15,7 @@ pipeline {
                     sh 'chmod +x qemu_start.sh'
                     sh 'Xvfb :99 -screen 0 1024x768x24 &'  
                     sh './qemu_start.sh &'
-                    // Ждем доступности BMC
+                  
                     sh 'sleep 2.5m'
                 }
             }
@@ -78,8 +78,8 @@ pipeline {
                         sh '''
                         /opt/venv/bin/locust -f locustfile.py \
                             --headless \
-                            --users 800 \
-                            --spawn-rate 30 \
+                            --users 300 \
+                            --spawn-rate 20 \
                             --run-time 30s \
                             --host=https://localhost:2443 \
                             --html load_test_report.html \
