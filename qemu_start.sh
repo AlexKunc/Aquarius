@@ -11,11 +11,11 @@ if [ ! -f "$QEMU_IMAGE_DIR/$QEMU_IMAGE_PATTERN" ]; then
   wget "$JENKINS_BUILD_URL" -O romulus.zip
   
   echo "Unpacking image..."
-  unzip -j -o romulus.zip '*/obmc-phosphor-image-romulus-*.static.mtd' -d "$QEMU_IMAGE_DIR"
+  unzip -o romulus.zip -d "$QEMU_IMAGE_DIR"
   rm romulus.zip
 fi
 
-QEMU_IMAGE=$(ls $QEMU_IMAGE_DIR/$QEMU_IMAGE_PATTERN | head -n 1)
+QEMU_IMAGE=$(find "$QEMU_IMAGE_DIR" -name "$QEMU_IMAGE_PATTERN" | head -n 1)
 
 if [ -z "$QEMU_IMAGE" ]; then
   echo "Error: QEMU image not found!"
@@ -24,12 +24,4 @@ fi
 
 echo "Using QEMU image: $QEMU_IMAGE"
 
-qemu-system-arm \
-  -m 256 \
-  -M romulus-bmc \
-  -nographic \
-  -drive "file=$QEMU_IMAGE,format=raw,if=mtd" \
-  -net nic \
-  -net "user,hostfwd=tcp::2222-:22,hostfwd=tcp::2443-:443,hostfwd=udp::2623-:623,hostname=qemu" \
-  -monitor none \
-  -serial mon:stdio
+qemu-system-arm -m 256 -M romulus-bmc -nographic -drive file=$QEMU_IMAGE,format=raw,if=mtd -net nic -net user,hostfwd=tcp::2222-:22,hostfwd=tcp::2443-:443,hostfwd=udp::2623-:623,hostname=qemu
