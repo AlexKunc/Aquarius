@@ -17,7 +17,7 @@ pipeline {
                     sh './qemu_start.sh &'
                     // Ждем доступности BMC
                     sh '''for i in {1..30}; do
-                            curl -k https://localhost:2443 && break
+                            curl -k https://loclhost:2443 && break
                             sleep 10
                           done'''
                 }
