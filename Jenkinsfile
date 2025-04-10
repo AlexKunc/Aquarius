@@ -70,7 +70,30 @@ pipeline {
                 }
             }
         }
-
         
-    }
+        stage('Run Load Tests') {
+            steps {
+                dir('lab6') {
+                    script {
+                        sh '''
+                        /opt/venv/bin/locust -f locustfile.py \
+                            --headless \
+                            --users 300 \
+                            --spawn-rate 50 \
+                            --run-time 10m \
+                            --host=https://localhost:2443 \
+                            --html load_test_report.html \
+                            --csv load_test
+                        '''
+                    }
+                }
+            }
+            post {
+                always {
+                    // Сохраняем отчеты
+                    archiveArtifacts artifacts: 'lab6/load_test_report.html, lab6/load_test_*.csv'
+                    junit 'lab6/load_test_stats.csv'
+                }
+            }
+        }
 }
