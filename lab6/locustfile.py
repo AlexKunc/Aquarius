@@ -1,6 +1,4 @@
 from locust import HttpUser, between, task
-import urllib3
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class OpenBMC(HttpUser):
     wait_time = between(1,5)
@@ -16,11 +14,11 @@ class OpenBMC(HttpUser):
 
 class PublicAPI(HttpUser):
     wait_time = between(1,2)
-    
+    host = "https://jsonplaceholder.typicode.com"
 
     @task
     def jsonplaceholder(self):
-        self.client.get("https://jsonplaceholder.typicode.com/posts", verify=False)
+        self.client.get("/posts", verify=False)
 
     @task
     def weather(self):
