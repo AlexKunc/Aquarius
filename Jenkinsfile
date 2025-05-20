@@ -16,7 +16,7 @@ pipeline {
                     sh 'Xvfb :99 -screen 0 1024x768x24 &'  
                     sh './qemu_start.sh &'
                     
-                    def maxAttempts = 33
+                    def maxAttempts = 66
                     def waitTime = 3
                     def attempts = 0
                     def bmcAvailable = false
